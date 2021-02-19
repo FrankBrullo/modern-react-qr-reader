@@ -143,8 +143,9 @@ module.exports = class Reader extends Component {
     const isFirefox = /firefox/i.test(navigator.userAgent);
     const isSafari = !!navigator.userAgent.match(/Version\/[\d/]+.*Safari/);
 
+    let supported = undefined;
     if (navigator.mediaDevices && typeof navigator.mediaDevices.getSupportedConstraints === 'function') {
-      const supported = navigator.mediaDevices.getSupportedConstraints()
+      supported = navigator.mediaDevices.getSupportedConstraints()
     }
     const constraints = {}
 
@@ -157,7 +158,8 @@ module.exports = class Reader extends Component {
 
       const vConstraintsPromise = (isSafari || isFirefox)
           ? Promise.resolve(props.constraints || constraints)
-          : getDeviceId(facingMode, undefined, cameraId).then(deviceId => Object.assign({}, {deviceId}, props.constraints))
+          : getDeviceId(facingMode, undefined, cameraId)
+              .then(deviceId => Object.assign({}, {deviceId}, props.constraints))
 
       vConstraintsPromise
           .then(video => navigator.mediaDevices.getUserMedia({video}))
